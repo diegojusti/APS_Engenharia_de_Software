@@ -18,7 +18,7 @@ public class InputVerifier {
     */
     
     public boolean isTextValid(String text){
-        return (text.length() > 0 || text.length() < 150);
+        return (text.length() > 0 && text.length() < 150);
     }
     
     public boolean isIntegerPositiveValid(String text){
