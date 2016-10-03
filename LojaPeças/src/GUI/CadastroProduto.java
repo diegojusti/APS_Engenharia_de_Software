@@ -9,6 +9,7 @@ import DAO.ProdutoDAO;
 import Entity.Produto;
 import Utils.InputVerifier;
 import javax.swing.JOptionPane;
+import Utils.Util;
 
 /**
  *
@@ -16,9 +17,7 @@ import javax.swing.JOptionPane;
  */
 public class CadastroProduto extends javax.swing.JDialog {
     
-    public static final int OPERATION_NEW = 1;
-    public static final int OPERATION_EDIT = 2;
-    public static final int OPERATION_DELETE = 3;
+
     int operation;
     ProdutoDAO pDao = new ProdutoDAO();
     InputVerifier iv = new InputVerifier();
@@ -42,13 +41,11 @@ public class CadastroProduto extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         this.p = p;
         this.operation = operation;
-        if(operation == OPERATION_DELETE)
-            jButtonSalvar.setText("Remover");   
         preencherCampos();     
     }
     
-    public void preencherCampos(){
-        if(operation != OPERATION_NEW){
+    private void preencherCampos(){
+        if(operation != Util.OPERATION_NEW){
             jFormattedTextFieldCod.setText(String.valueOf(p.getCodProduto()));
             jFormattedTextFieldPreco.setText(String.valueOf(p.getPreco()));
             jFormattedTextFieldQtd.setText(String.valueOf(p.getQtd()));
@@ -56,19 +53,20 @@ public class CadastroProduto extends javax.swing.JDialog {
             jTextFieldMarca.setText(p.getMarca());
             jTextFieldTipo.setText(p.getTipo());
         }
-        if(operation == OPERATION_DELETE){
+        if(operation == Util.OPERATION_DELETE){
             jFormattedTextFieldCod.setEditable(false);
             jFormattedTextFieldPreco.setEditable(false);
             jFormattedTextFieldQtd.setEditable(false);
             jTextFieldDescricao.setEditable(false);
             jTextFieldMarca.setEditable(false);
             jTextFieldTipo.setEditable(false);
+            jButtonSalvar.setText("Remover");  
         }
     }
     
     public boolean validarEntradas(){
         if(!iv.isIntegerPositiveValid(jFormattedTextFieldCod.getText())){
-            JOptionPane.showMessageDialog(null, "Código invalido");
+            JOptionPane.showMessageDialog(null, "Código inválido");
             return false;
         }
         else if(!iv.isTextValid(jTextFieldDescricao.getText())){
@@ -80,15 +78,15 @@ public class CadastroProduto extends javax.swing.JDialog {
             return false;
         }
         else if(!iv.isTextValid(jTextFieldTipo.getText())){
-            JOptionPane.showMessageDialog(null, "Tipo invalido");
+            JOptionPane.showMessageDialog(null, "Tipo inválido");
             return false;
         }
         else if(!iv.isFloatingPositiveValid(jFormattedTextFieldPreco.getText())){
-            JOptionPane.showMessageDialog(null, "Preço invalido");
+            JOptionPane.showMessageDialog(null, "Preço inválido");
             return false;
         }
         else if(!iv.isIntegerPositiveValid(jFormattedTextFieldQtd.getText())){
-            JOptionPane.showMessageDialog(null, "Qtd invalido");
+            JOptionPane.showMessageDialog(null, "Qtd inválido");
             return false;
         }
         return true;
@@ -285,7 +283,7 @@ public class CadastroProduto extends javax.swing.JDialog {
             
             switch(operation){
                 
-                case OPERATION_DELETE:
+                case Util.OPERATION_DELETE:
                     ret = pDao.deleteProduto(p1.getCodProduto());
                     if(ret == 1){
                         JOptionPane.showMessageDialog(null, "Removido com sucesso!");
@@ -294,7 +292,7 @@ public class CadastroProduto extends javax.swing.JDialog {
                     else
                         JOptionPane.showMessageDialog(null, "Erro na remoção");
                     break;
-                case OPERATION_NEW:
+                case Util.OPERATION_NEW:
                     ret = pDao.insertProduto(p1);
                     if(ret == 1){
                         JOptionPane.showMessageDialog(null, "Cadastrado com sucesso!");
@@ -305,7 +303,7 @@ public class CadastroProduto extends javax.swing.JDialog {
                     else
                         JOptionPane.showMessageDialog(null, "Erro no cadastro");
                     break;
-                case OPERATION_EDIT:
+                case Util.OPERATION_EDIT:
                     ret = pDao.updateProduto(p1, p.getCodProduto());
                     if(ret == 1){
                         JOptionPane.showMessageDialog(null, "Alterado com sucesso!");

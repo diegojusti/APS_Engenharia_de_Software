@@ -93,7 +93,7 @@ public class ProdutoDAO {
            
         switch(search_for){
             case S_CODIGO: query2 = " WHERE codProduto = " + p.getCodProduto() + ";"; break;
-            case S_NOME: query2 = " WHERE nome LIKE '%" + p.getNome() + "%';"; break;
+            case S_NOME: query2 = " WHERE nome ILIKE '%" + p.getNome() + "%';"; break;
         }
         
         try {

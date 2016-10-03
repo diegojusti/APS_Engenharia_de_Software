@@ -5,48 +5,54 @@
  */
 package GUI;
 
-import DAO.ProdutoDAO;
-import Entity.Produto;
+import DAO.ClienteDAO;
+import Entity.Cliente;
 import Utils.InputVerifier;
 import Utils.Util;
 import java.awt.event.KeyEvent;
+import java.text.ParseException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.MaskFormatter;
 
 
 /**
  *
  * @author Diego Justi
  */
-public class ListaProdutos extends javax.swing.JFrame {
+public class ListaClientes extends javax.swing.JFrame {
 
-    CadastroProduto cp;
-    ProdutoDAO pDao = new ProdutoDAO();  
+    CadastroCliente cc;
+    ClienteDAO cDao = new ClienteDAO();  
     InputVerifier iv = new InputVerifier();
-    Produto p;
-    List<Produto> produtos;
+    Cliente c;
+    List<Cliente> clientes;
     
     /**
-     * Creates new form ListaProdutos
+     * Creates new form ListaClientes
      */
-    public ListaProdutos() {
+    public ListaClientes() {
         initComponents();
         setLocationRelativeTo(null);
         jComboBoxPesquisaItemStateChanged(null);
     }
     
     public void montarTabela(){
-        String col[] = {"Código", "Descrição", "Marca", "Tipo", "Qtd"};
+        String col[] = {"CPF/CNPJ", "Nome/Empresa",
+            "Telefone 1", "Telefone 2", "E-mail"};
         DefaultTableModel dm = new DefaultTableModel(col, 0);
         
-        if(produtos == null){
+        if(clientes == null){
                     
         }
         else{
-            for(int i = 0; i < produtos.size(); i++){
-                Object row[] = {produtos.get(i).getCodProduto(), produtos.get(i).getNome(),
-                    produtos.get(i).getMarca(), produtos.get(i).getTipo(), produtos.get(i).getQtd()
+            for(int i = 0; i < clientes.size(); i++){
+                Object row[] = {clientes.get(i).getCpf_cnpj(), clientes.get(i).getNome(), 
+                    clientes.get(i).getTelefone1(), clientes.get(i).getTelefone2(), clientes.get(i).getEmail()
                 };
                 dm.addRow(row);
             }        
@@ -54,11 +60,13 @@ public class ListaProdutos extends javax.swing.JFrame {
         jTable1.setModel(dm);
     }
     public boolean validarEntradas(){
-        if(jComboBoxPesquisa.getSelectedIndex() == 0){
-            if(!iv.isIntegerPositiveValid(jFormattedTextFieldCodigo.getText())){
-                JOptionPane.showMessageDialog(null, "Código informado invalido");
-                return false;
-            }
+        switch(jComboBoxPesquisa.getSelectedIndex()){
+            case 1:
+            case 2:
+                if(!iv.isIntegerPositiveValid(jFormattedTextFieldCpfCnpj.getText())){
+                    JOptionPane.showMessageDialog(null, "CPF/CNPJ informado inválido");
+                    return false;
+                }
         }
         return true;
     }
@@ -76,16 +84,17 @@ public class ListaProdutos extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jComboBoxPesquisa = new javax.swing.JComboBox<>();
         jButtonPesquisa = new javax.swing.JButton();
-        jFormattedTextFieldCodigo = new javax.swing.JFormattedTextField();
+        jFormattedTextFieldCpfCnpj = new javax.swing.JFormattedTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jTextFieldDescricao = new javax.swing.JTextField();
+        jTextFieldNome = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jButtonNovo = new javax.swing.JButton();
         jButtonEditar = new javax.swing.JButton();
         jButtonExcluir = new javax.swing.JButton();
+        jButtonDetalhar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuProduto = new javax.swing.JMenu();
         jMenuItemPrincipal = new javax.swing.JMenuItem();
@@ -100,7 +109,7 @@ public class ListaProdutos extends javax.swing.JFrame {
             }
         });
 
-        jComboBoxPesquisa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Código", "Descrição" }));
+        jComboBoxPesquisa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nome/Empresa", "CPF", "CNPJ" }));
         jComboBoxPesquisa.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jComboBoxPesquisaItemStateChanged(evt);
@@ -114,9 +123,9 @@ public class ListaProdutos extends javax.swing.JFrame {
             }
         });
 
-        jFormattedTextFieldCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
+        jFormattedTextFieldCpfCnpj.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jFormattedTextFieldCodigoKeyPressed(evt);
+                jFormattedTextFieldCpfCnpjKeyPressed(evt);
             }
         });
 
@@ -124,9 +133,9 @@ public class ListaProdutos extends javax.swing.JFrame {
 
         jLabel1.setText("Procurar por");
 
-        jTextFieldDescricao.addKeyListener(new java.awt.event.KeyAdapter() {
+        jTextFieldNome.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTextFieldDescricaoKeyPressed(evt);
+                jTextFieldNomeKeyPressed(evt);
             }
         });
 
@@ -142,9 +151,9 @@ public class ListaProdutos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jFormattedTextFieldCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFormattedTextFieldCpfCnpj, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextFieldDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTextFieldNome, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonPesquisa)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -157,8 +166,8 @@ public class ListaProdutos extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jComboBoxPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
-                    .addComponent(jFormattedTextFieldCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextFieldDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFormattedTextFieldCpfCnpj, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButtonPesquisa))
                 .addContainerGap())
         );
@@ -235,6 +244,13 @@ public class ListaProdutos extends javax.swing.JFrame {
             }
         });
 
+        jButtonDetalhar.setText("Detalhar");
+        jButtonDetalhar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetalharActionPerformed(evt);
+            }
+        });
+
         jMenuProduto.setText("Navegar");
 
         jMenuItemPrincipal.setText("Menu principal");
@@ -254,16 +270,19 @@ public class ListaProdutos extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
+                        .addComponent(jButtonDetalhar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonNovo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonEditar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonExcluir)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -274,7 +293,8 @@ public class ListaProdutos extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonNovo)
                     .addComponent(jButtonEditar)
-                    .addComponent(jButtonExcluir))
+                    .addComponent(jButtonExcluir)
+                    .addComponent(jButtonDetalhar))
                 .addContainerGap())
         );
 
@@ -282,39 +302,52 @@ public class ListaProdutos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jComboBoxPesquisaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxPesquisaItemStateChanged
-        // TODO add your handling code here:
-        jButtonPesquisa.setVisible(false);
-        jTextFieldDescricao.setVisible(false);
-        jFormattedTextFieldCodigo.setVisible(false);
-        
-        switch(jComboBoxPesquisa.getSelectedIndex()){
-        case 0:
-            jFormattedTextFieldCodigo.setVisible(true);
-            jFormattedTextFieldCodigo.requestFocus();
-            break;
-        case 1:
-            jTextFieldDescricao.setVisible(true);
-            jTextFieldDescricao.requestFocus();
+        try {
+            // TODO add your handling code here:
+            jButtonPesquisa.setVisible(false);
+            jTextFieldNome.setVisible(false);
+            jFormattedTextFieldCpfCnpj.setVisible(false);
+            jFormattedTextFieldCpfCnpj.setFormatterFactory(null);
+            
+            switch(jComboBoxPesquisa.getSelectedIndex()){
+                case 2:
+                    jFormattedTextFieldCpfCnpj.setVisible(true);
+                    jFormattedTextFieldCpfCnpj.requestFocus();
+                    jFormattedTextFieldCpfCnpj.setFormatterFactory(new DefaultFormatterFactory(new MaskFormatter("###.###.###-##")));
+                    break;
+                case 1:
+                    jFormattedTextFieldCpfCnpj.setVisible(true);
+                    jFormattedTextFieldCpfCnpj.requestFocus();
+                    jFormattedTextFieldCpfCnpj.setFormatterFactory(new DefaultFormatterFactory(new MaskFormatter("##.###.###/####-##")));
+                    break;
+                case 0:
+                    jTextFieldNome.setVisible(true);
+                    jTextFieldNome.requestFocus();
+                    break;
+            }
+            jButtonPesquisa.setVisible(true);
+        } catch (ParseException ex) {
+            Logger.getLogger(ListaClientes.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jButtonPesquisa.setVisible(true);
     }//GEN-LAST:event_jComboBoxPesquisaItemStateChanged
 
     private void jButtonPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPesquisaActionPerformed
         // TODO add your handling code here:
         
         if(validarEntradas()){
-            p = new Produto();
+            c = new Cliente();
             switch(jComboBoxPesquisa.getSelectedIndex()){
-                case 0:
-                    p.setCodProduto(Integer.parseInt(jFormattedTextFieldCodigo.getText()));
-                    produtos = pDao.searchProduto(p, ProdutoDAO.S_CODIGO);
-                    break;
+                case 2:
                 case 1:
-                    p.setNome(jTextFieldDescricao.getText());
-                    produtos = pDao.searchProduto(p, ProdutoDAO.S_NOME);
+                    c.setCpf_cnpj(jFormattedTextFieldCpfCnpj.getText());
+                    clientes = cDao.searchCliente(c, ClienteDAO.S_CPF_CNPJ);
+                    break;
+                case 0:
+                    c.setNome(jTextFieldNome.getText());
+                    clientes = cDao.searchCliente(c, ClienteDAO.S_NOME);
                     break;
             }
-            if(produtos.isEmpty())
+            if(clientes.isEmpty())
                 JOptionPane.showMessageDialog(null, "A pesquisa não retornou resultados");
             else
                 montarTabela();
@@ -325,48 +358,56 @@ public class ListaProdutos extends javax.swing.JFrame {
 
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
         // TODO add your handling code here:
-        cp = new CadastroProduto(this, true, Util.OPERATION_NEW, null);
-        cp.setVisible(true);
+        cc = new CadastroCliente(this, true, Util.OPERATION_NEW, null);
+        cc.setVisible(true);
     }//GEN-LAST:event_jButtonNovoActionPerformed
 
     private void jButtonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditarActionPerformed
         // TODO add your handling code here:
         if(jTable1.getSelectedRowCount() == 1 && jTable1.getRowCount() > 0){
-            cp = new CadastroProduto(this, true, Util.OPERATION_EDIT, produtos.get(jTable1.getSelectedRow()));
-            cp.setVisible(true);
+            cc = new CadastroCliente(this, true, Util.OPERATION_EDIT, clientes.get(jTable1.getSelectedRow()));
+            cc.setVisible(true);
         }
     }//GEN-LAST:event_jButtonEditarActionPerformed
 
     private void jButtonExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExcluirActionPerformed
         // TODO add your handling code here:
         if(jTable1.getSelectedRowCount() == 1 && jTable1.getRowCount() > 0){
-            cp = new CadastroProduto(this, true, Util.OPERATION_DELETE, produtos.get(jTable1.getSelectedRow()));
-            cp.setVisible(true);
+            cc = new CadastroCliente(this, true, Util.OPERATION_DELETE, clientes.get(jTable1.getSelectedRow()));
+            cc.setVisible(true);
         }
     }//GEN-LAST:event_jButtonExcluirActionPerformed
 
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
         // TODO add your handling code here:
-        p = new Produto();
-        p.setNome("");
-        produtos = pDao.searchProduto(p, ProdutoDAO.S_NOME);
+        c = new Cliente();
+        c.setNome("");
+        clientes = cDao.searchCliente(c, ClienteDAO.S_NOME);
         montarTabela();
         
     }//GEN-LAST:event_formWindowGainedFocus
 
-    private void jFormattedTextFieldCodigoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextFieldCodigoKeyPressed
+    private void jFormattedTextFieldCpfCnpjKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextFieldCpfCnpjKeyPressed
         // TODO add your handling code here:
         if(evt.getKeyCode() == KeyEvent.VK_ENTER){
             jButtonPesquisaActionPerformed(null);
         }
-    }//GEN-LAST:event_jFormattedTextFieldCodigoKeyPressed
+    }//GEN-LAST:event_jFormattedTextFieldCpfCnpjKeyPressed
 
-    private void jTextFieldDescricaoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldDescricaoKeyPressed
+    private void jTextFieldNomeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldNomeKeyPressed
         // TODO add your handling code here:
         if(evt.getKeyCode() == KeyEvent.VK_ENTER){
             jButtonPesquisaActionPerformed(null);
         }
-    }//GEN-LAST:event_jTextFieldDescricaoKeyPressed
+    }//GEN-LAST:event_jTextFieldNomeKeyPressed
+
+    private void jButtonDetalharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetalharActionPerformed
+        // TODO add your handling code here:
+        if(jTable1.getSelectedRowCount() == 1 && jTable1.getRowCount() > 0){
+            cc = new CadastroCliente(this, true, Util.OPERATION_VIEW, clientes.get(jTable1.getSelectedRow()));
+            cc.setVisible(true);
+        }
+    }//GEN-LAST:event_jButtonDetalharActionPerformed
 
     /**
      * @param args the command line arguments
@@ -385,31 +426,35 @@ public class ListaProdutos extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ListaProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ListaClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ListaProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ListaClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ListaProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ListaClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ListaProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ListaClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ListaProdutos().setVisible(true);
+                new ListaClientes().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonDetalhar;
     private javax.swing.JButton jButtonEditar;
     private javax.swing.JButton jButtonExcluir;
     private javax.swing.JButton jButtonNovo;
     private javax.swing.JButton jButtonPesquisa;
     private javax.swing.JComboBox<String> jComboBoxPesquisa;
-    private javax.swing.JFormattedTextField jFormattedTextFieldCodigo;
+    private javax.swing.JFormattedTextField jFormattedTextFieldCpfCnpj;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu2;
@@ -421,6 +466,6 @@ public class ListaProdutos extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextFieldDescricao;
+    private javax.swing.JTextField jTextFieldNome;
     // End of variables declaration//GEN-END:variables
 }
